@@ -8,6 +8,8 @@
 ##########################################################################
 
 from odoo import api, models
+import logging
+_logger = logging.getLogger(__name__)
 
 class ConnectorSnippet(models.TransientModel):
     _name = "connector.snippet"
@@ -234,26 +236,27 @@ class ConnectorSnippet(models.TransientModel):
         return response
 
     def delete_connector_mapping(self, mapping_model, objs, ecomm_model, mappings=False):
-        if not mappings:
-            mappings = self.env[mapping_model]
-            for obj in objs:
-                mappings += obj.connector_mapping_ids
-        try:
-            ctx = dict(self._context or {})
-            ecomm_field = 'ecommerce_order_id' if ecomm_model == 'Order' else 'ecomm_id'
-            for instanceObj in mappings.mapped('instance_id'):
-                ecomm_ids = list(set(mappings.filtered(
-                    lambda obj: obj.instance_id.id == instanceObj.id).mapped(ecomm_field)))
-                # self.env['connector.snippet'].delete_connector_mapping(ecomm_ids, 'Product', instanceObj)
-                ctx['instance_id'] = instance_obj.id
-                connection = instance_obj.with_context(ctx)._create_connection()
-                odoo_ids = []
-                if ecomm_model == 'Customer':
-                    odoo_ids = list(set(mappings.filtered(
-                        lambda obj: obj.instance_id.id == instanceObj.id).mapped('odoo_id')))
-                channel = instance_obj.ecomm_type
-                if hasattr(self, 'delete_%s_mapping' % channel):
-                    getattr(self, 'delete_%s_mapping' % channel)(ecomm_ids, ecomm_model, connection, odoo_ids)
-        except Exception as e:
-            _logger.info("### Exception during Odoo record mapping deletion :- %s ",str(e))
-        return True
+        pass
+        # if not mappings:
+        #     mappings = self.env[mapping_model]
+        #     for obj in objs:
+        #         mappings += obj.connector_mapping_ids
+        # try:
+        #     ctx = dict(self._context or {})
+        #     ecomm_field = 'ecommerce_order_id' if ecomm_model == 'Order' else 'ecomm_id'
+        #     for instanceObj in mappings.mapped('instance_id'):
+        #         ecomm_ids = list(set(mappings.filtered(
+        #             lambda obj: obj.instance_id.id == instanceObj.id).mapped(ecomm_field)))
+        #         # self.env['connector.snippet'].delete_connector_mapping(ecomm_ids, 'Product', instanceObj)
+        #         ctx['instance_id'] = instanceObj.id
+        #         connection = instanceObj.with_context(ctx)._create_connection()
+        #         odoo_ids = []
+        #         if ecomm_model == 'Customer':
+        #             odoo_ids = list(set(mappings.filtered(
+        #                 lambda obj: obj.instance_id.id == instanceObj.id).mapped('odoo_id')))
+        #         channel = instanceObj.ecomm_type
+        #         if hasattr(self, 'delete_%s_mapping' % channel):
+        #             getattr(self, 'delete_%s_mapping' % channel)(ecomm_ids, ecomm_model, connection, odoo_ids)
+        # except Exception as e:
+        #     _logger.info("### Exception during Odoo record mapping deletion :- %s ",str(e))
+        # return True
