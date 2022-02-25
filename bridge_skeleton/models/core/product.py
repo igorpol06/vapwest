@@ -36,7 +36,10 @@ class ProductProduct(models.Model):
         if vals.get("default_code"):
             domain += [("default_code", "=", vals.get('default_code'))]
         if vals.get("barcode"):
-            domain = ["|"] + domain + [("barcode", "=", vals.get("barcode"))]
+            if len(domain) ==1:
+                domain = ["|"] + domain + [("barcode", "=", vals.get("barcode"))]
+            else:
+                domain = [("barcode", "=", vals.get("barcode"))]
         return domain
 
     @api.model
